@@ -9,6 +9,8 @@
 	<ItemGroup>
 		<!-- Atualize para a versão mais recente do Pomelo se possível -->
 		<PackageReference Include="Dapper" Version="2.1.66" />
+		<PackageReference Include="FluentMigrator" Version="7.0.0" />
+		<PackageReference Include="FluentMigrator.Runner" Version="7.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

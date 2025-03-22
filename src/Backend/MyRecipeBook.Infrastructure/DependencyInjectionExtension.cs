@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using FluentMigrator.Runner;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyRecipeBook.Domain.Repositories.User;
@@ -12,6 +14,7 @@ public static class DependencyInjectionExtension
     public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         AddDbContext(services, configuration);
+        AddFluentMigrator_MySql(services, configuration);
         AddRepositories(services);
     }
 
@@ -31,5 +34,20 @@ public static class DependencyInjectionExtension
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUserWriteOnlyRepository, UserRepository>();
         services.AddScoped<IUserReadOnlyRepository, UserRepository>();
+    }
+
+    private static void AddFluentMigrator_MySql(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("ConnectionMySqlServer");
+
+        services
+            .AddFluentMigratorCore()
+            .ConfigureRunner(options =>
+                options
+                    .AddMySql8()
+                    .WithGlobalConnectionString(connectionString)
+                    .ScanIn(typeof(DependencyInjectionExtension).Assembly).For.All()
+            )
+            .AddLogging(config => config.AddFluentMigratorConsole());
     }
 }

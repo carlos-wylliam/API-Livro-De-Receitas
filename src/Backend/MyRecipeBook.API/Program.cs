@@ -21,6 +21,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+MigrateDatabase();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -36,12 +38,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-MigrateDatabase();
-
 app.Run();
 
 void MigrateDatabase()
 {
-    var connectionString = builder.Configuration.ConnectionString();
-    DatabaseMigration.Migrate(connectionString);
+    var connectionString = builder.Configuration.GetConnectionString("ConnectionMySqlServer");
+    using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+    DatabaseMigration.Migrate(connectionString!, serviceScope.ServiceProvider);
 }
